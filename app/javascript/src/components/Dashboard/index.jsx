@@ -8,7 +8,6 @@ import { isNil, isEmpty, either } from "ramda";
 const Dashboard = ({ history }) => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const fetchTasks = async () => {
     try {
       const {
