@@ -6,6 +6,7 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
 
   rescue_from StandardError, with: :handle_api_exception
+  rescue_from Pundit::NotAuthorizedError, with: :handle_authorization_error
 
   def handle_api_exception(exception)
     case exception
@@ -39,6 +40,8 @@ class ApplicationController < ActionController::Base
     error = Rails.env.production? ? t("generic_error") : exception
     render_error(error, status)
   end
+
+  include Pundit::Authorization
 
   def log_exception(exception)
     Rails.logger.info exception.class.to_s
@@ -82,5 +85,9 @@ class ApplicationController < ActionController::Base
 
     def current_user
       @current_user
+    end
+
+    def handle_authorization_error
+      render_error(t("authorization.denied"), :forbidden)
     end
 end

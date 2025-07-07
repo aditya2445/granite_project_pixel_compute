@@ -50,6 +50,7 @@ gem "net-protocol", "~>0.2.2"
 gem "ostruct"
 gem "pp"
 gem "prettyprint"
+gem "pundit"
 gem "react-rails", "~> 2.7.1"
 gem "responders"
 gem "simplecov", require: false, group: :test
