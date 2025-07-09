@@ -5,6 +5,7 @@ class Task < ApplicationRecord
   MAX_TITLE_LENGTH = 125
   VALID_TITLE_REGEX = /\A.*[a-zA-Z0-9].*\z/i
   enum :progress, { pending: "pending", completed: "completed" }, default: :pending
+  enum :status, { unstarred: "unstarred", starred: "starred" }, default: :unstarred
   has_many :comments, dependent: :destroy
   belongs_to :task_owner, foreign_key: "task_owner_id", class_name: "User"
   belongs_to :assigned_user, foreign_key: "assigned_user_id", class_name: "User"
@@ -12,6 +13,14 @@ class Task < ApplicationRecord
   validates :slug, uniqueness: true
   validate :slug_not_changed
   before_create :set_slug
+
+  def self.of_status(progress)
+    if progress == :pending
+      pending.in_order_of(:status, %w(starred unstarred)).order("updated_at DESC")
+    else
+      completed.in_order_of(:status, %w(starred unstarred)).order("updated_at DESC")
+    end
+    end
 
   private
 
@@ -36,5 +45,5 @@ class Task < ApplicationRecord
       if will_save_change_to_slug? && self.persisted?
         errors.add(:slug, I18n.t("task.slug.immutable"))
       end
-  end
+    end
 end
